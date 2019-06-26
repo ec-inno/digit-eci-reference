@@ -44,7 +44,7 @@ exports.createPages = async ({ graphql, actions }) => {
     const { alias, langcode } = node.path;
 
     if (alias && langcode) {
-      const pathInGatsby = `${langcode}${alias}`;
+      const pathInGatsby = `/${langcode}${alias}`;
 
       createPage({
         path: pathInGatsby,
@@ -95,13 +95,11 @@ exports.onCreatePage = async ({ page, actions }) => {
   const { createPage, deletePage } = actions;
 
   try {
-    deletePage(page);
-
     return languages.langs.map(lang => {
-      const localizedPath = `${lang}${page.path}`;
+      const localizedPath = `/${lang}${page.path}`;
       const languageRegex = `//${lang}//`;
 
-      return createPage({
+      const localePage = {
         ...page,
         path: localizedPath,
         // Be extra careful with context: https://www.gatsbyjs.org/docs/creating-and-modifying-pages/#pass-context-to-pages
@@ -110,7 +108,16 @@ exports.onCreatePage = async ({ page, actions }) => {
           locale: lang,
           languageRegex,
         },
-      });
+      };
+
+      // Not working yet.
+      // @see https://github.com/gatsbyjs/gatsby/issues/15101
+      if (localePage.path.match(/^\/[a-z]{2}\/404\/$/)) {
+        localePage.matchPath = `/${lang}/*`;
+      }
+
+      deletePage(page);
+      return createPage(localePage);
     });
   } catch (error) {
     throw error;
