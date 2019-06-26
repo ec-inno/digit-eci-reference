@@ -1,44 +1,25 @@
 import React from 'react';
 import { Link } from 'gatsby';
 
-import logoBG from '@ecl/eu-preset-website/dist/images/logo/logo--bg.svg';
-import logoEN from '@ecl/eu-preset-website/dist/images/logo/logo--en.svg';
-import logoFR from '@ecl/eu-preset-website/dist/images/logo/logo--fr.svg';
-
-import { map as languageMap } from '../languages';
+import logoPaths from '../utils/logoPaths';
+import { map as languageMap, defaultLangKey } from '../languages';
 
 import SiteName from './SiteName';
 import LanguageListOverlay from './LanguageList/LanguageListOverlayWithContext';
 import LanguageSelector from './LanguageSelector';
 
-const Header = ({
-  languages,
-  currentLanguage,
-  location,
-  contentTranslations,
-}) => {
-  // Defaults.
+const Header = ({ languages, location, contentTranslations }) => {
   let items = [];
-  let logo = logoEN; // defaultLangKey could also be used if to be more sophisticated.
-  // Enable display of language switcher overlay only when there's useful information for it.
+  let logo = logoPaths[defaultLangKey];
   let opensOverlay = false;
 
-  switch (currentLanguage) {
-    case 'fr': {
-      logo = logoFR;
-      break;
-    }
-    case 'bg': {
-      logo = logoBG;
-      break;
-    }
-  }
+  const { pathname } = location;
+  const [langcode, urlPath] = pathname.split('/').filter(p => p);
 
-  // In order to show an overlay with languages for switching
-  // between different language version of a given content,
-  // it's necessary to have enough context.
-  const currentPath = location.pathname;
-  const [langcode, urlPath] = currentPath.split('/').filter(p => p);
+  // Change logo to a language-specific one, if applicable.
+  if (langcode !== defaultLangKey) {
+    logo = logoPaths[langcode];
+  }
 
   const translationSet = contentTranslations.find(contentTranslation => {
     return (
@@ -63,7 +44,7 @@ const Header = ({
         lang: langcode,
         label: languageMap[langcode],
         // src/components/LanguageList/LanguageListItem.jsx is not ready yet for isActive
-        // isActive: langcode === currentLanguage,
+        // isActive: langcode === langcode,
       };
     });
     opensOverlay = true;
@@ -82,7 +63,7 @@ const Header = ({
           <div className="ecl-site-header__banner">
             <Link
               className="ecl-link ecl-link--standalone"
-              to={`/${currentLanguage}`}
+              to={`/${langcode}`}
               aria-label="European Union"
             >
               <img
@@ -93,14 +74,14 @@ const Header = ({
               />
             </Link>
             <LanguageSelector
-              code={currentLanguage}
-              name={languageMap[currentLanguage]}
+              code={langcode}
+              name={languageMap[langcode]}
               href="#"
               opensOverlay={opensOverlay}
             />
           </div>
         </div>
-        <SiteName currentLanguage={currentLanguage} />
+        <SiteName currentLanguage={langcode} />
       </header>
       <LanguageListOverlay
         closeLabel="Close"

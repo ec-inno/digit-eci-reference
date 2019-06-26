@@ -49,7 +49,6 @@ const Layout = ({ children, location }) => {
       <TopMessage currentLanguage={currentLanguage} />
       <Header
         languages={languages}
-        currentLanguage={currentLanguage}
         location={location}
         contentTranslations={contentTranslations}
       />

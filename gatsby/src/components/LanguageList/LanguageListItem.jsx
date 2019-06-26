@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { Link } from 'gatsby';
 
-import Context from '../../Context';
+import Context, { SET_LANGUAGE_OVERLAY_VISIBILITY } from '../../Context';
 
 // As close as possible to https://github.com/ec-europa/europa-component-library/blob/v2-dev/src/systems/ec/implementations/react/page-structure/language-list/src/LanguageListItem.jsx
 const LanguageListItem = ({ label, lang, href, isActive, isOverlay }) => {
@@ -13,7 +13,7 @@ const LanguageListItem = ({ label, lang, href, isActive, isOverlay }) => {
     <Link
       onClick={() =>
         dispatch({
-          type: 'SET_LANGUAGE_OVERLAY_VISIBILITY',
+          type: SET_LANGUAGE_OVERLAY_VISIBILITY,
           hideOverlay: true,
         })
       }
