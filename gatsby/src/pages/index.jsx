@@ -4,7 +4,8 @@ import slugify from 'slugify';
 
 import getCurrentLanguage from '../utils/getCurrentLanguage';
 
-const Homepage = ({ data }) => {
+const Homepage = ({ data, location }) => {
+  const currentLanguage = getCurrentLanguage(location);
   const news = data.allNews.edges;
 
   return (
@@ -20,7 +21,7 @@ const Homepage = ({ data }) => {
             return (
               <li className="ecl-unordered-list__item" key={id}>
                 <Link
-                  to={`/${langcode}/news#${slugify(title, {lower: true})}`}
+                  to={`/${langcode}/news#${slugify(title, { lower: true })}`}
                   className="ecl-u-d-block ecl-link ecl-link--standalone"
                 >
                   <strong>{title}</strong>
@@ -42,7 +43,12 @@ const Homepage = ({ data }) => {
           })}
         </ul>
         <p className="ecl-u-type-paragraph">
-          <Link className="ecl-link ecl-link--standalone" to={`/${getCurrentLanguage}/news`}>See more news</Link>
+          <Link
+            className="ecl-link ecl-link--standalone"
+            to={`/${currentLanguage}/news`}
+          >
+            See more news
+          </Link>
         </p>
       </div>
     </main>

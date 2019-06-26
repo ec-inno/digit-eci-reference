@@ -53,7 +53,7 @@ const Layout = ({ children, location }) => {
         location={location}
         contentTranslations={contentTranslations}
       />
-      <Menu currentLanguage={currentLanguage} />
+      <Menu location={location} />
       {children}
       <Footer location={location} />
     </>

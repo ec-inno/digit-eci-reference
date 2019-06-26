@@ -1,10 +1,13 @@
 import React from 'react';
+import classnames from 'classnames';
 import { Link } from 'gatsby';
 
 import data from './data';
 
-const Menu = ({ currentLanguage }) => {
-  const links = data[currentLanguage];
+const Menu = ({ location }) => {
+  const locations = location.pathname.split('/').filter(p => p);
+  const [language, path] = locations;
+  const links = data[language];
 
   return (
     <nav className="eci-menu">
@@ -13,14 +16,25 @@ const Menu = ({ currentLanguage }) => {
           {links && links.length ? (
             links.map((link, key) => {
               const { label, href } = link;
+              let classActive = '';
+
+              if (
+                // In case of home page.
+                (href === '/' && path === undefined) ||
+                // Or any other internal one.
+                (path && href.includes(path))
+              ) {
+                classActive = 'eci-menu__option--is-selected';
+              }
+
+              const classNames = classnames(classActive, 'eci-menu__option');
+
               return (
-                <li className="eci-menu__option" key={key}>
+                <li className={classNames} key={key}>
                   <Link
                     to={
                       // If the user has left a base path, correct it, as there's always a language.
-                      href === '/'
-                        ? `/${currentLanguage}`
-                        : `/${currentLanguage}${href}`
+                      href === '/' ? `/${language}` : `/${language}${href}`
                     }
                     className="eci-menu__link ecl-link"
                   >
@@ -31,10 +45,7 @@ const Menu = ({ currentLanguage }) => {
             })
           ) : (
             <li className="eci-menu__option eci-menu__option--is-selected">
-              <a
-                href={`/${currentLanguage}`}
-                className="eci-menu__link ecl-link"
-              >
+              <a href={`/${language}`} className="eci-menu__link ecl-link">
                 Home
               </a>
             </li>
