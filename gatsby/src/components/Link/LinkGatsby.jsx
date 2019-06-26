@@ -3,9 +3,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import Icon from './Icon';
+import { Link } from 'gatsby';
 
-const Link = ({
+import Icon from '../Icon';
+
+const LinkGatsby = ({
   variant,
   href,
   label,
@@ -56,13 +58,13 @@ const Link = ({
   }
 
   return (
-    <a {...props} href={href} className={classNames}>
+    <Link {...props} to={href} className={classNames}>
       {label}
-    </a>
+    </Link>
   );
 };
 
-Link.propTypes = {
+LinkGatsby.propTypes = {
   variant: PropTypes.string,
   href: PropTypes.string,
   label: PropTypes.string,
@@ -74,7 +76,7 @@ Link.propTypes = {
   className: PropTypes.string,
 };
 
-Link.defaultProps = {
+LinkGatsby.defaultProps = {
   variant: '',
   href: '',
   label: '',
@@ -83,4 +85,4 @@ Link.defaultProps = {
   className: '',
 };
 
-export default Link;
+export default LinkGatsby;

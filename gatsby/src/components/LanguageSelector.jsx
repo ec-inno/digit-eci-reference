@@ -5,7 +5,7 @@ import Context, { SET_LANGUAGE_OVERLAY_VISIBILITY } from '../Context';
 
 import Icon from './Icon';
 
-const LanguageSelector = ({ href, name, code }) => {
+const LanguageSelector = ({ href, name, code, opensOverlay }) => {
   const { dispatch } = useContext(Context);
 
   const openOverlay = e => {
@@ -17,10 +17,12 @@ const LanguageSelector = ({ href, name, code }) => {
     });
   };
 
+  const nothing = e => e.preventDefault();
+
   return (
     <div className="ecl-site-header__selector">
       <a
-        onClick={openOverlay}
+        onClick={opensOverlay ? openOverlay : nothing}
         className="ecl-link ecl-link--standalone"
         href={href}
         data-ecl-language-selector

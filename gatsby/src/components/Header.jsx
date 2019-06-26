@@ -14,17 +14,19 @@ const Header = ({ languages, location, contentTranslations }) => {
   let opensOverlay = false;
 
   const { pathname } = location;
-  const [langcode, urlPath] = pathname.split('/').filter(p => p);
+  const pathParts = pathname.split('/').filter(p => p);
+  const langcodeCurrent = pathParts.shift();
+  const urlPath = pathParts.join('/');
 
   // Change logo to a language-specific one, if applicable.
-  if (langcode !== defaultLangKey) {
-    logo = logoPaths[langcode];
+  if (langcodeCurrent !== defaultLangKey) {
+    logo = logoPaths[langcodeCurrent];
   }
 
   const translationSet = contentTranslations.find(contentTranslation => {
     return (
       contentTranslation.path.alias === `/${urlPath}` &&
-      contentTranslation.path.langcode === langcode
+      contentTranslation.path.langcode === langcodeCurrent
     );
   });
 
@@ -34,6 +36,7 @@ const Header = ({ languages, location, contentTranslations }) => {
     translationSet.translations &&
     translationSet.translations.length
   ) {
+    // Add translations.
     items = translationSet.translations.map(translation => {
       // translation is a structure of data coming from jsonapi about a pathauto alias.
       // Because gatsby has already created content matching this path, we only need to reformat the information.
@@ -43,18 +46,47 @@ const Header = ({ languages, location, contentTranslations }) => {
         href: `/${langcode}${alias}`,
         lang: langcode,
         label: languageMap[langcode],
-        // src/components/LanguageList/LanguageListItem.jsx is not ready yet for isActive
-        // isActive: langcode === langcode,
       };
     });
-    opensOverlay = true;
-  } else {
-    items = languages.map(language => ({
-      href: urlPath ? `/${language.lang}/${urlPath}` : `/${language.lang}`,
-      ...language,
-    }));
+
+    // Add currently active language.
+    items.push({
+      href: pathname,
+      lang: langcodeCurrent,
+      label: languageMap[langcodeCurrent],
+      isActive: true,
+    });
+
+    // Enable overlay.
     opensOverlay = true;
   }
+  // The page is based on drupal content, not translations.
+  else if (!translationSet && pathParts.length > 1) {
+    opensOverlay = false;
+  }
+  // The page is programatic: /news, /about, etc. Translation pattern is predictable.
+  else {
+    items = languages.map(language => {
+      const href = urlPath
+        ? `/${language.lang}/${urlPath}`
+        : `/${language.lang}`;
+      const isActive = href.includes(langcodeCurrent);
+
+      return {
+        href,
+        isActive,
+        ...language,
+      };
+    });
+
+    // Enable the overlay.
+    opensOverlay = true;
+  }
+
+  // Correct order.
+  items = items.sort((a, b) =>
+    a.lang < b.lang ? -1 : a.lang > b.lang ? 1 : 0
+  );
 
   return (
     <>
@@ -63,7 +95,7 @@ const Header = ({ languages, location, contentTranslations }) => {
           <div className="ecl-site-header__banner">
             <Link
               className="ecl-link ecl-link--standalone"
-              to={`/${langcode}`}
+              to={`/${langcodeCurrent}`}
               aria-label="European Union"
             >
               <img
@@ -74,14 +106,14 @@ const Header = ({ languages, location, contentTranslations }) => {
               />
             </Link>
             <LanguageSelector
-              code={langcode}
-              name={languageMap[langcode]}
+              code={langcodeCurrent}
+              name={languageMap[langcodeCurrent]}
               href="#"
               opensOverlay={opensOverlay}
             />
           </div>
         </div>
-        <SiteName currentLanguage={langcode} />
+        <SiteName currentLanguage={langcodeCurrent} />
       </header>
       <LanguageListOverlay
         closeLabel="Close"
